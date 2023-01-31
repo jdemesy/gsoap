@@ -3,6 +3,7 @@
 
 	Example chaining of C++ service classes into one service application,
 	assuming they are built with soapcpp2 option -i
+	NOTE: option -j is preferred, see chaining2.cpp
 
 	To generate non-client-server header and fault handlers:
 	$ soapcpp2 -CS -penv env.h
@@ -19,7 +20,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2011, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -45,6 +46,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 
 #include "QuotequoteService.h"
 #include "CalccalcService.h"
+#include "envH.h" /* include envH.h as the last file, if this file is needed */
 
 /* A dummy global table, to keep the linker happy */
 struct Namespace namespaces[] = { {NULL} };
@@ -60,9 +62,9 @@ int main()
 	else if (quote.dispatch() == SOAP_NO_METHOD)
 	{
 		soap_copy_stream(&calc, &quote);
+		soap_free_stream(&quote); /* quote is no longer using this socket */
 		if (calc.dispatch())
 			soap_send_fault(&calc);
-		soap_free_stream(&calc);
 	}
 	else if (quote.error)
 		soap_send_fault(&quote);
@@ -73,7 +75,7 @@ int main()
 }
 
 int Quote::quoteService::getQuote(char *s, float *r)
-{ *r = 123; /* a dummy service, stocks don't move */
+{ *r = 123; /* a dummy service, these stocks don't move! */
   return SOAP_OK;
 }
 
@@ -93,7 +95,9 @@ int Calc::calcService::mul(double a, double b, double *r)
 }
 
 int Calc::calcService::div(double a, double b, double *r)
-{ *r = a / b;
+{ if (b == 0)
+    return soap_sender_fault(this, "Division by zero", NULL);
+  *r = a / b;
   return SOAP_OK;
 }
 

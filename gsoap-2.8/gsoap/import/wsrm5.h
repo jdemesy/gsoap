@@ -1,5 +1,5 @@
 /*
-	wsrm5.h
+	wsrm5.h WS-ReliableMessaging 1.0 2005/02 and WS-Addressing 2005/08
 
 	Usage: See import/wsrx.h and plugin/wsrmapi.c
 
@@ -15,10 +15,12 @@
 	- Changed wsrm__SequenceClosed to wsrm__LastMessageNumberExceeded
 	- Added //gsoap wsrm  schema namespace2: http://docs.oasis-open.org/ws-rx/wsrm/200702
 	- Added #import "wsrx5.h" at the end of these definitions
-        - Added _XML __any; to struct _wsrm__SequenceAcknowledgement
 	- Added #define SOAP_WSRM_2005
 	- Added LastMessage to wsrm__SequenceType
-	- Added LastMsgNumber to wsrm__TerminateSequenceResponseType
+	- Removed LastMsgNumber
+	- Added //gsoap netrm schema namespace: http://schemas.microsoft.com/ws/2006/05/rm
+                Int*                        netrm__BufferRemaining;
+        - Added _XML __any; to struct _wsrm__SequenceAcknowledgement
 
 */
 
@@ -71,7 +73,7 @@ typedef struct wsrm__AckRequestedType wsrm__AckRequestedType;
 /// Typedef synonym for struct wsrm__SequenceFaultType.
 typedef struct wsrm__SequenceFaultType wsrm__SequenceFaultType;
 
-/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":DetailType from typemap /Users/engelen/Projects/gsoap/WS/WS-typemap.dat.
+/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":DetailType from typemap WS/WS-typemap.dat.
 // complexType definition intentionally left blank.
 
 /// Typedef synonym for struct wsrm__CreateSequenceType.
@@ -101,14 +103,14 @@ typedef struct wsrm__AcceptType wsrm__AcceptType;
 /// Typedef synonym for struct _wsrm__SequenceAcknowledgement.
 typedef struct _wsrm__SequenceAcknowledgement _wsrm__SequenceAcknowledgement;
 
-/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Identifier from typemap /Users/engelen/Projects/gsoap/WS/WS-typemap.dat.
+/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Identifier from typemap WS/WS-typemap.dat.
 /// @brief This type is for elements whose [children] is an anyURI and can have arbitrary attributes.
 typedef char *_wsrm__Identifier;
 
-/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Address from typemap /Users/engelen/Projects/gsoap/WS/WS-typemap.dat.
+/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Address from typemap WS/WS-typemap.dat.
 // complexType definition intentionally left blank.
 
-/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Expires from typemap /Users/engelen/Projects/gsoap/WS/WS-typemap.dat.
+/// Imported complexType "http://docs.oasis-open.org/ws-rx/wsrm/200702":Expires from typemap WS/WS-typemap.dat.
 #import "custom/duration.h"
 
 /// Typedef synonym for struct _wsrm__UsesSequenceSTR.
@@ -125,7 +127,7 @@ typedef struct _wsrm__UsesSequenceSSL _wsrm__UsesSequenceSSL;
 \******************************************************************************/
 
 
-/// Imported simpleType "http://docs.oasis-open.org/ws-rx/wsrm/200702":MessageNumberType from typemap /Users/engelen/Projects/gsoap/WS/WS-typemap.dat.
+/// Imported simpleType "http://docs.oasis-open.org/ws-rx/wsrm/200702":MessageNumberType from typemap WS/WS-typemap.dat.
 // simpleType definition intentionally left blank.
 
 /// "http://docs.oasis-open.org/ws-rx/wsrm/200702":FaultCodes is a simpleType restriction of xs:QName.
@@ -267,8 +269,6 @@ struct wsrm__CloseSequenceType
 {
 /// Element reference "http://docs.oasis-open.org/ws-rx/wsrm/200702":Identifier.
     char*                                Identifier                     1;	///< Required element.
-/// Element LastMsgNumber of type "http://docs.oasis-open.org/ws-rx/wsrm/200702":MessageNumberType.
-    ULONG64*                             LastMsgNumber                  0;	///< Optional element.
 /// TODO: <any namespace="##other" minOccurs="0" maxOccurs="unbounded">
 /// TODO: Schema extensibility is user-definable.
 ///       Consult the protocol documentation to change or insert declarations.
@@ -303,8 +303,6 @@ struct wsrm__TerminateSequenceType
 {
 /// Element reference "http://docs.oasis-open.org/ws-rx/wsrm/200702":Identifier.
     char*                                Identifier                     1;	///< Required element.
-/// Element LastMsgNumber of type "http://docs.oasis-open.org/ws-rx/wsrm/200702":MessageNumberType.
-    ULONG64*                             LastMsgNumber                  0;	///< Optional element.
 /// TODO: <any namespace="##other" minOccurs="0" maxOccurs="unbounded">
 /// TODO: Schema extensibility is user-definable.
 ///       Consult the protocol documentation to change or insert declarations.
@@ -322,8 +320,6 @@ struct wsrm__TerminateSequenceResponseType
 {
 /// Element reference "http://docs.oasis-open.org/ws-rx/wsrm/200702":Identifier.
     char*                                Identifier                     1;	///< Required element.
-/// Element LastMsgNumber of type "http://docs.oasis-open.org/ws-rx/wsrm/200702":MessageNumberType.
-    ULONG64*                             LastMsgNumber                  0;	///< Optional element.
 /// TODO: <any namespace="##other" minOccurs="0" maxOccurs="unbounded">
 /// TODO: Schema extensibility is user-definable.
 ///       Consult the protocol documentation to change or insert declarations.
@@ -427,7 +423,9 @@ struct _wsrm__SequenceAcknowledgement
 ///       Consult the protocol documentation to change or insert declarations.
 ///       Use wsdl2h option -x to remove this element.
 ///       Use wsdl2h option -d for xsd__anyType DOM (soap_dom_element).
-    _XML                                 __any; // netrm extensibility
+//gsoap netrm schema namespace: http://schemas.microsoft.com/ws/2006/05/rm
+    int                                 *netrm__BufferRemaining; ///< WCF netrm BufferRemaining
+    _XML                                 __any; // extensibility
 /// <anyAttribute namespace="##other">
 /// TODO: Schema extensibility is user-definable.
 ///       Consult the protocol documentation to change or insert declarations.

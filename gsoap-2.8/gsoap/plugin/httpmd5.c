@@ -1,21 +1,21 @@
 /*
 
-httpmd5.c
+	httpmd5.c
 
-gSOAP HTTP Content-MD5 digest plugin.
+	gSOAP HTTP Content-MD5 digest plugin.
 
-Usage (both client and server, see httpmd5test.h/.c for example):
-soap_register_plugin(&soap, http_md5);
-This enables HTTP MD5 checksum generation and checking for SOAP/XML messages
-WITHOUT attachments.
+	Usage (both client and server, see httpmd5test.h/.c for example):
+	soap_register_plugin(&soap, http_md5);
+	This enables HTTP MD5 checksum generation and checking for SOAP/XML messages
+	WITHOUT attachments.
 
-Compile with -DWITH_OPENSSL
-Link with OpenSSL (for md5evp.c), httpmd5.c, and md5evp.c
+	Compile with -DWITH_OPENSSL
+	Link with OpenSSL (for md5evp.c), httpmd5.c, and md5evp.c
 
 gSOAP XML Web services tools
 Copyright (C) 2000-2005, Robert van Engelen, Genivia Inc., All Rights Reserved.
 This part of the software is released under one of the following licenses:
-GPL, the gSOAP public license, or Genivia's license for commercial use.
+GPL or the gSOAP public license.
 --------------------------------------------------------------------------------
 gSOAP public license.
 
@@ -82,7 +82,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 extern "C" {
 #endif
 
-const char http_md5_id[13] = HTTP_MD5_ID;
+const char http_md5_id[18] = HTTP_MD5_ID;
 
 static int http_md5_init(struct soap *soap, struct http_md5_data *data);
 static int http_md5_copy(struct soap *soap, struct soap_plugin *dst, struct soap_plugin *src);
@@ -97,15 +97,17 @@ static int http_md5_preparerecv(struct soap *soap, const char *buf, size_t len);
 static int http_md5_preparefinalrecv(struct soap *soap);
 
 int http_md5(struct soap *soap, struct soap_plugin *p, void *arg)
-{ p->id = http_md5_id;
+{ (void)arg;
+  p->id = http_md5_id;
   p->data = (void*)SOAP_MALLOC(soap, sizeof(struct http_md5_data));
   p->fcopy = http_md5_copy;
   p->fdelete = http_md5_delete;
-  if (p->data)
-    if (http_md5_init(soap, (struct http_md5_data*)p->data))
-    { SOAP_FREE(soap, p->data); /* error: could not init */
-      return SOAP_EOM; /* return error */
-    }
+  if (!p->data)
+    return SOAP_EOM;
+  if (http_md5_init(soap, (struct http_md5_data*)p->data))
+  { SOAP_FREE(soap, p->data); /* error: could not init */
+    return SOAP_EOM; /* return error */
+  }
   return SOAP_OK;
 }
 
@@ -121,20 +123,21 @@ static int http_md5_init(struct soap *soap, struct http_md5_data *data)
   data->fpreparesend = soap->fpreparesend;
   soap->fpreparesend = http_md5_preparesend;
   data->context = NULL;
-  memset(data->digest, 0, sizeof(data->digest));
+  memset((void*)data->digest, 0, sizeof(data->digest));
   return SOAP_OK;
 }
 
 static int http_md5_copy(struct soap *soap, struct soap_plugin *dst, struct soap_plugin *src)
 { *dst = *src;
   dst->data = (void*)SOAP_MALLOC(soap, sizeof(struct http_md5_data));
-  memcpy(dst->data, src->data, sizeof(struct http_md5_data));
+  (void)soap_memcpy((void*)dst->data, sizeof(struct http_md5_data), (const void*)src->data, sizeof(struct http_md5_data));
   ((struct http_md5_data*)dst->data)->context = NULL;
   return SOAP_OK;
 }
 
 static void http_md5_delete(struct soap *soap, struct soap_plugin *p)
-{ struct http_md5_data *data = (struct http_md5_data*)soap_lookup_plugin(soap, http_md5_id);
+{ (void)p;
+  struct http_md5_data *data = (struct http_md5_data*)soap_lookup_plugin(soap, http_md5_id);
   if (data)
   { md5_handler(soap, &data->context, MD5_DELETE, NULL, 0);
     SOAP_FREE(soap, data);
@@ -228,7 +231,7 @@ static int http_md5_preparefinalrecv(struct soap *soap)
   md5_handler(soap, &data->context, MD5_FINAL, digest, 0);
   soap->fpreparerecv = data->fpreparerecv;
   soap->fpreparefinalrecv = data->fpreparefinalrecv;
-  if (memcmp(digest, data->digest, 16))
+  if (memcmp((void*)digest, (const void*)data->digest, sizeof(data->digest)))
     return soap_sender_fault(soap, "MD5 digest mismatch: message corrupted", NULL);
   if (soap->fpreparefinalrecv)
     return soap->fpreparefinalrecv(soap);

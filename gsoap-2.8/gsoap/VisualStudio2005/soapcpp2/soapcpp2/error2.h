@@ -5,8 +5,8 @@
 
 gSOAP XML Web services tools
 Copyright (C) 2000-2008, Robert van Engelen, Genivia Inc. All Rights Reserved.
-This part of the software is released under ONE of the following licenses:
-GPL OR Genivia's license for commercial use.
+This part of the software is released under one of the following licenses:
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -36,9 +36,9 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 extern char errbuf[];
 
 #ifdef WIN32_WITHOUT_SOLARIS_FLEX
-extern void soapcpp2error(char*);
+extern void soapcpp2error(const char*);
 #else
-extern void yyerror(char*);
+extern void yyerror(const char*);
 #endif
 
 extern void lexerror(const char*);

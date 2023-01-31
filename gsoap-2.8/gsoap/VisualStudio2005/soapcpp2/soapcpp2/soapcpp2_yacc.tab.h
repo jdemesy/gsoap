@@ -1,14 +1,14 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
-   This program is free software; you can redistribute it and/or modify
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,221 +31,157 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
+#ifndef YY_YY_SOAPCPP2_YACC_TAB_H_INCLUDED
+# define YY_YY_SOAPCPP2_YACC_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     PRAGMA = 258,
-     AUTO = 259,
-     DOUBLE = 260,
-     INT = 261,
-     STRUCT = 262,
-     BREAK = 263,
-     ELSE = 264,
-     LONG = 265,
-     SWITCH = 266,
-     CASE = 267,
-     ENUM = 268,
-     REGISTER = 269,
-     TYPEDEF = 270,
-     CHAR = 271,
-     EXTERN = 272,
-     RETURN = 273,
-     UNION = 274,
-     CONST = 275,
-     FLOAT = 276,
-     SHORT = 277,
-     UNSIGNED = 278,
-     CONTINUE = 279,
-     FOR = 280,
-     SIGNED = 281,
-     VOID = 282,
-     DEFAULT = 283,
-     GOTO = 284,
-     SIZEOF = 285,
-     VOLATILE = 286,
-     DO = 287,
-     IF = 288,
-     STATIC = 289,
-     WHILE = 290,
-     CLASS = 291,
-     PRIVATE = 292,
-     PROTECTED = 293,
-     PUBLIC = 294,
-     VIRTUAL = 295,
-     INLINE = 296,
-     OPERATOR = 297,
-     LLONG = 298,
-     BOOL = 299,
-     CFALSE = 300,
-     CTRUE = 301,
-     WCHAR = 302,
-     TIME = 303,
-     USING = 304,
-     NAMESPACE = 305,
-     ULLONG = 306,
-     MUSTUNDERSTAND = 307,
-     SIZE = 308,
-     FRIEND = 309,
-     TEMPLATE = 310,
-     EXPLICIT = 311,
-     TYPENAME = 312,
-     RESTRICT = 313,
-     null = 314,
-     UCHAR = 315,
-     USHORT = 316,
-     UINT = 317,
-     ULONG = 318,
-     NONE = 319,
-     ID = 320,
-     LAB = 321,
-     TYPE = 322,
-     LNG = 323,
-     DBL = 324,
-     CHR = 325,
-     TAG = 326,
-     STR = 327,
-     RA = 328,
-     LA = 329,
-     OA = 330,
-     XA = 331,
-     AA = 332,
-     MA = 333,
-     DA = 334,
-     TA = 335,
-     NA = 336,
-     PA = 337,
-     OR = 338,
-     AN = 339,
-     NE = 340,
-     EQ = 341,
-     GE = 342,
-     LE = 343,
-     RS = 344,
-     LS = 345,
-     AR = 346,
-     PP = 347,
-     NN = 348
-   };
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    PRAGMA = 258,                  /* PRAGMA  */
+    AUTO = 259,                    /* AUTO  */
+    DOUBLE = 260,                  /* DOUBLE  */
+    INT = 261,                     /* INT  */
+    STRUCT = 262,                  /* STRUCT  */
+    BREAK = 263,                   /* BREAK  */
+    ELSE = 264,                    /* ELSE  */
+    LONG = 265,                    /* LONG  */
+    SWITCH = 266,                  /* SWITCH  */
+    CASE = 267,                    /* CASE  */
+    ENUM = 268,                    /* ENUM  */
+    REGISTER = 269,                /* REGISTER  */
+    TYPEDEF = 270,                 /* TYPEDEF  */
+    CHAR = 271,                    /* CHAR  */
+    EXTERN = 272,                  /* EXTERN  */
+    RETURN = 273,                  /* RETURN  */
+    UNION = 274,                   /* UNION  */
+    CONST = 275,                   /* CONST  */
+    FLOAT = 276,                   /* FLOAT  */
+    SHORT = 277,                   /* SHORT  */
+    UNSIGNED = 278,                /* UNSIGNED  */
+    CONTINUE = 279,                /* CONTINUE  */
+    FOR = 280,                     /* FOR  */
+    SIGNED = 281,                  /* SIGNED  */
+    VOID = 282,                    /* VOID  */
+    DEFAULT = 283,                 /* DEFAULT  */
+    GOTO = 284,                    /* GOTO  */
+    SIZEOF = 285,                  /* SIZEOF  */
+    VOLATILE = 286,                /* VOLATILE  */
+    DO = 287,                      /* DO  */
+    IF = 288,                      /* IF  */
+    STATIC = 289,                  /* STATIC  */
+    WHILE = 290,                   /* WHILE  */
+    CLASS = 291,                   /* CLASS  */
+    PRIVATE = 292,                 /* PRIVATE  */
+    PROTECTED = 293,               /* PROTECTED  */
+    PUBLIC = 294,                  /* PUBLIC  */
+    VIRTUAL = 295,                 /* VIRTUAL  */
+    INLINE = 296,                  /* INLINE  */
+    OPERATOR = 297,                /* OPERATOR  */
+    LLONG = 298,                   /* LLONG  */
+    BOOL = 299,                    /* BOOL  */
+    CFALSE = 300,                  /* CFALSE  */
+    CTRUE = 301,                   /* CTRUE  */
+    WCHAR = 302,                   /* WCHAR  */
+    TIME = 303,                    /* TIME  */
+    USING = 304,                   /* USING  */
+    NAMESPACE = 305,               /* NAMESPACE  */
+    ULLONG = 306,                  /* ULLONG  */
+    MUSTUNDERSTAND = 307,          /* MUSTUNDERSTAND  */
+    SIZE = 308,                    /* SIZE  */
+    FRIEND = 309,                  /* FRIEND  */
+    TEMPLATE = 310,                /* TEMPLATE  */
+    EXPLICIT = 311,                /* EXPLICIT  */
+    TYPENAME = 312,                /* TYPENAME  */
+    MUTABLE = 313,                 /* MUTABLE  */
+    null = 314,                    /* null  */
+    RESTRICT = 315,                /* RESTRICT  */
+    FINAL = 316,                   /* FINAL  */
+    OVERRIDE = 317,                /* OVERRIDE  */
+    UCHAR = 318,                   /* UCHAR  */
+    USHORT = 319,                  /* USHORT  */
+    UINT = 320,                    /* UINT  */
+    ULONG = 321,                   /* ULONG  */
+    NONE = 322,                    /* NONE  */
+    ID = 323,                      /* ID  */
+    LAB = 324,                     /* LAB  */
+    TYPE = 325,                    /* TYPE  */
+    LNG = 326,                     /* LNG  */
+    DBL = 327,                     /* DBL  */
+    CHR = 328,                     /* CHR  */
+    TAG = 329,                     /* TAG  */
+    STR = 330,                     /* STR  */
+    PA = 331,                      /* PA  */
+    NA = 332,                      /* NA  */
+    TA = 333,                      /* TA  */
+    DA = 334,                      /* DA  */
+    MA = 335,                      /* MA  */
+    AA = 336,                      /* AA  */
+    XA = 337,                      /* XA  */
+    OA = 338,                      /* OA  */
+    LA = 339,                      /* LA  */
+    RA = 340,                      /* RA  */
+    OR = 341,                      /* OR  */
+    AN = 342,                      /* AN  */
+    EQ = 343,                      /* EQ  */
+    NE = 344,                      /* NE  */
+    LE = 345,                      /* LE  */
+    GE = 346,                      /* GE  */
+    LS = 347,                      /* LS  */
+    RS = 348,                      /* RS  */
+    AR = 349,                      /* AR  */
+    PP = 350,                      /* PP  */
+    NN = 351                       /* NN  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
-#define PRAGMA 258
-#define AUTO 259
-#define DOUBLE 260
-#define INT 261
-#define STRUCT 262
-#define BREAK 263
-#define ELSE 264
-#define LONG 265
-#define SWITCH 266
-#define CASE 267
-#define ENUM 268
-#define REGISTER 269
-#define TYPEDEF 270
-#define CHAR 271
-#define EXTERN 272
-#define RETURN 273
-#define UNION 274
-#define CONST 275
-#define FLOAT 276
-#define SHORT 277
-#define UNSIGNED 278
-#define CONTINUE 279
-#define FOR 280
-#define SIGNED 281
-#define VOID 282
-#define DEFAULT 283
-#define GOTO 284
-#define SIZEOF 285
-#define VOLATILE 286
-#define DO 287
-#define IF 288
-#define STATIC 289
-#define WHILE 290
-#define CLASS 291
-#define PRIVATE 292
-#define PROTECTED 293
-#define PUBLIC 294
-#define VIRTUAL 295
-#define INLINE 296
-#define OPERATOR 297
-#define LLONG 298
-#define BOOL 299
-#define CFALSE 300
-#define CTRUE 301
-#define WCHAR 302
-#define TIME 303
-#define USING 304
-#define NAMESPACE 305
-#define ULLONG 306
-#define MUSTUNDERSTAND 307
-#define SIZE 308
-#define FRIEND 309
-#define TEMPLATE 310
-#define EXPLICIT 311
-#define TYPENAME 312
-#define RESTRICT 313
-#define null 314
-#define UCHAR 315
-#define USHORT 316
-#define UINT 317
-#define ULONG 318
-#define NONE 319
-#define ID 320
-#define LAB 321
-#define TYPE 322
-#define LNG 323
-#define DBL 324
-#define CHR 325
-#define TAG 326
-#define STR 327
-#define RA 328
-#define LA 329
-#define OA 330
-#define XA 331
-#define AA 332
-#define MA 333
-#define DA 334
-#define TA 335
-#define NA 336
-#define PA 337
-#define OR 338
-#define AN 339
-#define NE 340
-#define EQ 341
-#define GE 342
-#define LE 343
-#define RS 344
-#define LS 345
-#define AR 346
-#define PP 347
-#define NN 348
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 125 "soapcpp2_yacc.y"
-{	Symbol	*sym;
-	LONG64	i;
-	double	r;
-	char	c;
-	char	*s;
-	Tnode	*typ;
-	Storage	sto;
-	Node	rec;
-	Entry	*e;
-}
-/* Line 1529 of yacc.c.  */
-#line 246 "soapcpp2_yacc.tab.h"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+union YYSTYPE
+{
+#line 146 "soapcpp2_yacc.y"
+
+  Symbol  *sym;
+  LONG64  i;
+  double  r;
+  char    c;
+  char    *s;
+  Tnode   *typ;
+  Storage sto;
+  Node    rec;
+  Entry   *e;
+  IR      ir;
+
+#line 173 "soapcpp2_yacc.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+
+int yyparse (void);
+
+
+#endif /* !YY_YY_SOAPCPP2_YACC_TAB_H_INCLUDED  */

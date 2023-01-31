@@ -1,12 +1,13 @@
 /*
-	wsa5.h
+	wsa5.h WS-Addressing 2005/08, accepts WS-Addressing 2004/08
 
 	Usage: See plugin/wsaapi.c
 
 	Generated with:
 	wsdl2h -cgye -o wsa5.h -t WS/WS-typemap.dat WS/WS-Addressing05.xsd
 
-	Modified by Robert van Engelen:
+        Requires:
+        - plugin/wsaapi.h and plugin/wsaapi.c
 
 	- Removed //gsoapopt
 	- Removed xsd__boolean declaration
@@ -17,7 +18,7 @@
 	generated WSDL.
 	- Added //gsoap wsa5  schema namespace2: http://schemas.xmlsoap.org/ws/2004/08/addressing
 	- Added #define SOAP_WSA_2005
-	- Added SOAP_ENV__Header struct
+	- Added mutable SOAP_ENV__Header struct
 	- Added SOAP_ENV__Fault one-way operation
 	- Added //gsoap chan schema import: http://schemas.microsoft.com/ws/2005/02/duplex
 	- Added chan__ChannelInstance to wsa5__ReferenceParametersType
@@ -47,6 +48,7 @@
  *                                                                            *
 \******************************************************************************/
 
+#define SOAP_NAMESPACE_OF_wsa5	"http://www.w3.org/2005/08/addressing"
 //gsoap wsa5  schema import:		http://www.w3.org/2005/08/addressing
 //gsoap wsa5  schema namespace2:	http://schemas.xmlsoap.org/ws/2004/08/addressing
 //gsoap wsa5  schema elementForm:	qualified
@@ -260,7 +262,7 @@ struct chan__ChannelInstanceType
 };
 
 /// Added
-struct SOAP_ENV__Header
+mutable struct SOAP_ENV__Header
 {
                  _wsa5__MessageID  wsa5__MessageID 0;
                  _wsa5__RelatesTo *wsa5__RelatesTo 0;

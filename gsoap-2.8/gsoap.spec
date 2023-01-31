@@ -2,27 +2,13 @@
 
 Summary: Generator Tools for Coding SOAP/XML Web Services in C and C++
 Name: gsoap-commercial
-Version: 2.8.12
+Version: 2.8.124
 Release: fxs.46.2.%{?dist}
 # Bump the soversion when the new version is not backward compatible
 %global soversion 2
 
-# gsoap is licensed both under the gSOAP public license and under GPL version
-# 2 with an OpenSSL linking exception.
-#
-# The gSOAP public license is a modified version of the Mozilla Public License.
-# Due to the modifications, the gSOAP public license is non-free. You can not
-# use gsoap under this license for software that you intend to contribute to
-# fedora. If you use gsoap in fedora you must use it under the GPL license,
-# possibly using the OpenSSL linking exception. The specific modification that
-# makes the license non-free is in section 3.2:
-#
-# 3.2. Availability of Source Code.
-# Any Modification created by You will be provided to the Initial Developer in
-# Source Code form and are subject to the terms of the License.
-License: GPLv2 with exceptions
+License: Open source under GPLv2, commercial use requires commercial-use license
 Group: Development/Tools
-#URL: http://gsoap2.sourceforge.net/
 URL: http://www.genivia.com/
 #Source0: http://downloads.sourceforge.net/gsoap2/%{name}_%{version}.zip
 Source0: %{name}-%{version}.tar.bz2
@@ -306,6 +292,9 @@ make check
 %_datadir/gsoap/WS/WS-Trust.wsdl
 %_datadir/gsoap/WS/WS-Trust.xsd
 %_datadir/gsoap/WS/WS-SecureConversation.xsd
+# Additions in 2.8.16-1
+%_datadir/gsoap/import/wsc2.h
+%_datadir/gsoap/plugin/calcrest.h
 
 %files doc
 %defattr(-,root,root,-)
@@ -326,8 +315,11 @@ make check
 %postun -p /sbin/ldconfig
 
 %changelog
+* Fri Oct 06 2013 Robert van Engelen <engelen@genivia.com> - 2.8.17
+- Updated for 2.8.17 release
+
 * Fri Jan 11 2013 Brian A. Seklecki <bseklecki@fedex.com> - 2.8.12.fxs.46.2
-- FedEx ITSS Snapshot Import (Binary Release of 2.8.12 from Genevia)
+- FedEx ITSS Snapshot Import (Binary Release of 2.8.12 from Genivia)
 
 * Tue Oct 09 2012 Brian A. Seklecki <bseklecki@fedex.com> - 2.8.7.2.46.2
 - FedEx ITSS Snapshot Import 

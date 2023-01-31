@@ -1,7 +1,7 @@
 ####### This is the input file for automake, which will generate Makefile.in ##########
 ## not a GNU package. You can remove this line, if
 ## you have all needed files, that a GNU package needs
-AUTOMAKE_OPTIONS = foreign 1.4
+AUTOMAKE_OPTIONS = subdir-objects foreign 1.4
 
 noinst_PROGRAMS = chaining
 
@@ -16,9 +16,9 @@ CalccalcService.cpp:	calc.h
 
 BUILT_SOURCES = QuotequoteService.cpp CalccalcService.cpp envC.cpp
 
-CLEANFILES = *.req.xml *.res.xml *.nsmap *.xsd *.wsdl envStub.h envH.h envC.cpp calcStub.h calcH.h calcC.cpp Calc*Proxy.h Calc*Proxy.cpp Calc*Object.h Calc*Service.h Calc*Service.cpp calcClient.cpp calcServer.cpp calcClientLib.cpp calcServerLib.cpp quoteStub.h quoteH.h quoteC.cpp Quote*Proxy.h Quote*Proxy.cpp Quote*Object.h Quote*Service.h Quote*Service.cpp QuoteClient.cpp QuoteServer.cpp quoteClientLib.cpp quoteServerLib.cpp *~
+CLEANFILES = *.req.xml *.res.xml *.nsmap *.xsd *.wsdl envStub.h envH.h envC.cpp CalcStub.h CalcH.h CalcC.cpp Calc*Proxy.h Calc*Proxy.cpp Calc*Object.h Calc*Service.h Calc*Service.cpp CalcClient.cpp CalcServer.cpp CalcClientLib.cpp CalcServerLib.cpp QuoteStub.h QuoteH.h QuoteC.cpp Quote*Proxy.h Quote*Proxy.cpp Quote*Object.h Quote*Service.h Quote*Service.cpp QuoteClient.cpp QuoteServer.cpp QuoteClientLib.cpp QuoteServerLib.cpp *~
 
 SOAP_NS = Calc.nsmap
 
 chaining_SOURCES = chaining.cpp quote.h calc.h env.h QuotequoteService.cpp CalccalcService.cpp QuoteC.cpp CalcC.cpp envC.cpp
-chaining_LDADD = $(SOAP_CPP_LIB) $(SAMPLE_EXTRA_LIBS)
+chaining_LDADD = $(SOAP_CPP_LIB) $(SAMPLE_EXTRA_LIBS) -lm

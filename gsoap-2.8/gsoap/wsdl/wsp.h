@@ -6,8 +6,8 @@
 --------------------------------------------------------------------------------
 gSOAP XML Web services tools
 Copyright (C) 2001-2010, Robert van Engelen, Genivia Inc. All Rights Reserved.
-This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+This software is released under one of the following licenses:
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -132,11 +132,17 @@ class wsp__Content
 
 	wsrmp__RMAssertion		*wsrmp__RMAssertion_;
 	wsrmp__RMAssertion		*wsrmp__DeliveryAssurance;
-
 	xsd__string			wsrmp__AtLeastOnce;
 	xsd__string			wsrmp__AtMostOnce;
 	xsd__string			wsrmp__ExactlyOnce;
 	xsd__string			wsrmp__InOrder;
+
+	wsrmp5__RMAssertion		*wsrmp5__RMAssertion_;
+	wsrmp5__RMAssertion		*wsrmp5__DeliveryAssurance;
+	xsd__string			wsrmp5__AtLeastOnce;
+	xsd__string			wsrmp5__AtMostOnce;
+	xsd__string			wsrmp5__ExactlyOnce;
+	xsd__string			wsrmp5__InOrder;
 
 	wsp__Assertion			*sp__NoPassword;
 	wsp__Assertion			*sp__HashPassword;

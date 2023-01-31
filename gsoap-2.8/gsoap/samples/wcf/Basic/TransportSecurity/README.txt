@@ -1,7 +1,8 @@
 INSTRUCTIONS
 
-Install the WCF samples: Windows Communication Foundation (WCF) and Windows
-Workflow Foundation (WF) Samples for .NET Framework 4.
+Install the WCF samples by downloading the "Windows Communication Foundation
+(WCF) and Windows Workflow Foundation (WF) Samples for .NET Framework 4." from
+the Microsoft download site (you may have to search).
 
 You should have:
 
@@ -26,7 +27,7 @@ Convert PEM to cer format:
 Import cacert.cer by opening it on the Windows machine and then select Install
 Certificate.
 
-Change client.cs by removing the RemoveValidate(...) check to always return
+Change client.cs by removing the RemoteCertValidate(...) check to always return
 true, or modify according to certificate properties to enforce.
 
 To connect a WCF client to a gSOAP service
@@ -44,7 +45,7 @@ Run the gSOAP server on port 8000 and then the client.
 
   $ ./calculator 8000
 
-  C:\WF_WCF_Samples\WCF\Basic\Binding\Basic\TransportSecurity\CS\client> bin\client.exe
+  C:\WF_WCF_Samples\WCF\Basic\Binding\Basic\TransportSecurity\CS\client\bin\client.exe
 
 To self-host a WCF service
 --------------------------
@@ -55,11 +56,11 @@ Obtain the machine name or IP
 
 say it is 10.0.1.5 over wifi.
 
-Add a Main() to self-host, say the WCF samples CalculatorService class under
+Add a Program class with Main() to the WCF sample to self host a service:
 
   C:\WF_WCF_Samples\WCF\Basic\Binding\Basic\TransportSecurity\CS\service
 
-with the following class put in the namespace:
+with the following Program class put in the namespace:
 
 using System;
 using System.ServiceModel;
@@ -79,11 +80,10 @@ namespace ...
         BasicHttpBinding bhb = new BasicHttpBinding();
         bhb.Security.Mode = BasicHttpSecurityMode.Transport;
         bhb.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
-  
         serviceHost.AddServiceEndpoint(typeof(ICalculator), bhb, "");
   
         ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-        smb.HttpGetEnabled = true;
+        smb.HttpsGetEnabled = true;
         serviceHost.Description.Behaviors.Add(smb);
   
         serviceHost.Open();
@@ -98,9 +98,19 @@ namespace ...
 Under Project Properties change the Output type to Console Application to
 generate a service.exe.
 
-Compile and run the WCF service:
+For the self-hosted service to work properly you must configure a port with an
+SSL certificate, see:
 
-  C:\WF_WCF_Samples\WCF\Basic\Binding\Basic\TransportSecurity\CS\service> bin\service.exe
+https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/how-to-configure-a-port-with-an-ssl-certificate
+
+If you are using IIS then configure an IIS-hosted WCF service with SSL:
+
+https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/how-to-configure-an-iis-hosted-wcf-service-with-ssl
+
+After compiling, run service.exe from the command prompt (this may require
+administrator privileges):
+
+  C:\WF_WCF_Samples\WCF\Basic\Binding\Basic\TransportSecurity\CS\service\bin\service.exe
 
 Use a web browser to access the service at
   https://10.0.1.5:8000/ServiceModelSamples/service

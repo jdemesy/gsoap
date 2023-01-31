@@ -6,26 +6,10 @@
 #This software is released under one of the following two licenses:
 #GPL or Genivia's license for commercial use.
 #-------------------------------------------------------------------------------
-#GPL license.
-#
-#This program is free software; you can redistribute it and/or modify it under
-#the terms of the GNU General Public License as published by the Free Software
-#Foundation; either version 2 of the License, or (at your option) any later
-#version.
-#
-#This program is distributed in the hope that it will be useful, but WITHOUT ANY
-#WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-#PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-#You should have received a copy of the GNU General Public License along with
-#this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-#Place, Suite 330, Boston, MA 02111-1307 USA
-#
-#Author contact information:
-#engelen@genivia.com / engelen@acm.org
-#-------------------------------------------------------------------------------
 #A commercial use license is available from Genivia, Inc., contact@genivia.com
 #-------------------------------------------------------------------------------
+
+xsd__dateTime = #import "custom/struct_timeval.h" | xsd__dateTime
 
 #	Bindings for WS-* protocols:
 
@@ -36,11 +20,11 @@ wsen	= "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
 
 wsp	= "http://schemas.xmlsoap.org/ws/2004/09/policy"
 
-#	wsp redeclarations, used in wst.h:
+#	recommended wsp redeclarations, used in wst.h:
 
-_wsp__Policy		= | _XML | _XML
-_wsp__PolicyReference	= | _XML | _XML
-_wsp__AppliesTo		= | _XML | _XML
+#_wsp__Policy		= | _XML | _XML
+#_wsp__PolicyReference	= | _XML | _XML
+#_wsp__AppliesTo		= typedef struct _wsp__AppliesTo { wsa5__EndpointReferenceType *wsa5__EndpointReference; } _wsp__AppliesTo; | struct _wsp__AppliesTo
 
 #	wsa bindings
 
@@ -113,11 +97,18 @@ wsdd10  = <http://schemas.xmlsoap.org/ws/2005/04/discovery>
 
 #	wsc bindings
 
-wsc	= <http://schemas.xmlsoap.org/ws/2005/02/sc>
+wsc	= <http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512>
+wsc2	= <http://schemas.xmlsoap.org/ws/2005/02/sc>
 
-#	wst bindings 1.0
+#	wst bindings
 
-wst	= <http://schemas.xmlsoap.org/ws/2005/02/trust>
+wst	= <http://docs.oasis-open.org/ws-sx/ws-trust/200512/>
+wst12	= <http://schemas.xmlsoap.org/ws/2005/02/trust>
+
+#	SAML bindings
+
+saml1	= <urn:oasis:names:tc:SAML:1.0:assertion>
+saml2	= <urn:oasis:names:tc:SAML:2.0:assertion>
 
 ################################################################################
 #
@@ -142,31 +133,80 @@ wsc__SecurityContextTokenType = $\
 #
 ################################################################################
 
-wst__RequestTypeEnum		=
-wst__BinarySecretTypeEnum	=
-wst__ComputedKeyEnum		=
-wst__StatusCodeEnum		=
-wst__KeyTypeEnum		=
+wst__RequestTypeEnum		= | char*
+wst__RequestTypeOpenEnum	= | char*
+wst__BinarySecretTypeEnum	= | char*
+wst__BinarySecretTypeOpenEnum	= | char*
+wst__ComputedKeyEnum		= | char*
+wst__ComputedKeyOpenEnum	= | char*
+wst__StatusCodeEnum		= | char*
+wst__StatusCodeOpenEnum		= | char*
+wst__KeyTypeEnum		= | char*
+wst__KeyTypeOpenEnum		= | char*
 
+wst__RequestSecurityTokenType = $\
+    _wsp__AppliesTo_*                    wsp__AppliesTo;
+wst__RequestSecurityTokenType = $\
+    char*                                KeyType;
+wst__RequestSecurityTokenType = $\
+    char*                                RequestType;
 wst__RequestSecurityTokenType = $\
     char*                                TokenType;
 wst__RequestSecurityTokenType = $\
-    wst__RequestTypeOpenEnum             RequestType;
+    wst__EntropyType*                    Entropy;
+wst__RequestSecurityTokenType = $\
+    char*                                ComputedKeyAlgorithm;
 wst__RequestSecurityTokenType = $\
     unsigned int*                        KeySize;
 wst__RequestSecurityTokenType = $\
-    struct wst__BinaryExchangeType*      BinaryExhange;
+    struct wst__CancelTargetType*        CancelTarget;
+wst__RequestSecurityTokenType = $\
+    struct wst__BinaryExchangeType*      BinaryExchange;
+wst__RequestSecurityTokenType = $\
+    struct wst__AuthenticatorType*       Authenticator;
 
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__RequestedSecurityTokenType* RequestedSecurityToken;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__RequestedReferenceType*  RequestedAttachedReference;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__RequestedReferenceType*  RequestedUnattachedReference;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__RequestedProofTokenType* RequestedProofToken;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__RequestedTokenCancelledType* RequestedTokenCancelled;
+wst__RequestSecurityTokenResponseType = $\
+    char*                                KeyType;
+wst__RequestSecurityTokenResponseType = $\
+    char*                                RequestType;
 wst__RequestSecurityTokenResponseType = $\
     char*                                TokenType;
 wst__RequestSecurityTokenResponseType = $\
-    struct wst__RequestedSecurityTokenType*  RequestedSecurityToken;
+    wst__EntropyType*                    Entropy;
 wst__RequestSecurityTokenResponseType = $\
-    struct wst__BinaryExchangeType*      BinaryExhange;
+    struct wst__LifetimeType*            Lifetime;
+wst__RequestSecurityTokenResponseType = $\
+    unsigned int*                        KeySize;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__BinaryExchangeType*      BinaryExchange;
+wst__RequestSecurityTokenResponseType = $\
+    struct wst__AuthenticatorType*       Authenticator;
 
+wst__RequestedProofTokenType = $\
+    struct xenc__EncryptedKeyType*       xenc__EncryptedKey;
+
+wst__CancelTargetType = $\
+    _wsse__SecurityTokenReference        wsse__SecurityTokenReference;
+
+# WS-Trust with SAML 1.0 and 2.0:
 wst__RequestedSecurityTokenType =\
+#import "saml1.h"\n\
+#import "saml2.h"\n\
 typedef struct wst__RequestedSecurityTokenType\n\
-{	_wsse__SecurityTokenReference *wsse__SecurityTokenReference;\n\
+{	saml1__AssertionType *saml1__Assertion;\n\
+	saml2__AssertionType *saml2__Assertion;\n\
+        _wsse__SecurityTokenReference *wsse__SecurityTokenReference;\n\
+        struct wsc__SecurityContextTokenType *wsc__SecurityContextToken;\n\
 } wst__RequestedSecurityTokenType;
 
 wst__EntropyType =\
@@ -178,6 +218,11 @@ wst__DelegatToeType =\
 typedef struct wst__DelegateToType\n\
 {	_wsse__SecurityTokenReference *wsse__SecurityTokenReference;\n\
 } wst__DelegateToType;
+
+wst__AuthenticatorType =\
+typedef struct wst__AuthenticatorType\n\
+{	char *CombinedHash;\n\
+} wst__AuthenticatorType;
 
 ################################################################################
 #
@@ -210,11 +255,8 @@ typedef struct _wsu__Timestamp\n\
 # wsse:AttributedString has a wsu:Id we don't need
 wsse__AttributedString = | char*
 
-# wsse:EncodedString has an EncodingType attribute we don't need for Nonce
-wsse__EncodedString = | char*
-
-# Don't use global wsse:Nonce
-_wsse__Nonce =
+# wsse:Nonce is just a wsse:EncodedString
+_wsse__Nonce = | struct wsse__EncodedString
 
 # Don't use wsse:tUsage and global wsse:Usage
 wsse__tUsage =
@@ -238,7 +280,7 @@ _wsse__UsernameToken =\
 typedef struct _wsse__UsernameToken\n\
 {	char*					Username;\n\
 	struct _wsse__Password*			Password;\n\
-	char*					Nonce;\n\
+	struct wsse__EncodedString*		Nonce;\n\
 	char*					wsu__Created;\n\
 	@char*					wsu__Id;\n\
 } _wsse__UsernameToken;
@@ -312,10 +354,12 @@ _wsse__TransformationParameters =
 # Don't use wsse:SecurityHeaderType
 wsse__SecurityHeaderType =
 
-# But use wsse:Security element with additional content
+# Use wsse:Security element with additional content such as SAML assertion
 _wsse__Security =\
 #import "xenc.h"\n\
 #import "wsc.h"\n\
+#import "saml1.h"\n\
+#import "saml2.h"\n\
 typedef struct _wsse__Security\n\
 {	struct _wsu__Timestamp*			wsu__Timestamp;\n\
 	struct _wsse__UsernameToken*		UsernameToken;\n\
@@ -323,6 +367,8 @@ typedef struct _wsse__Security\n\
 	struct xenc__EncryptedKeyType*		xenc__EncryptedKey;\n\
 	struct _xenc__ReferenceList*		xenc__ReferenceList;\n\
 	struct ds__SignatureType*		ds__Signature;\n\
+	struct saml1__AssertionType*		saml1__Assertion;\n\
+	struct saml2__AssertionType*		saml2__Assertion;\n\
 	@char*					SOAP_ENV__actor;\n\
 	@char*					SOAP_ENV__role;\n\
 } _wsse__Security;
@@ -347,19 +393,21 @@ typedef struct ds__TransformType\n\
 } ds__TransformType, _ds__Transform;
 
 ds__KeyInfoType =\
-typedef struct ds__KeyInfoType\n\
+mutable struct ds__KeyInfoType\n\
 {	char*					KeyName;\n\
 	struct ds__KeyValueType*		KeyValue;\n\
 	struct ds__RetrievalMethodType*		RetrievalMethod;\n\
 	struct ds__X509DataType*		X509Data;\n\
 	struct _wsse__SecurityTokenReference*	wsse__SecurityTokenReference;\n\
 	@char*					Id;\n\
-} ds__KeyInfoType, _ds__KeyInfo;
+};\n\
+typedef struct ds__KeyInfoType ds__KeyInfoType, _ds__KeyInfo;
 
 ds__SignatureType =\
+typedef char *_ds__SignatureValue;\n\
 typedef struct ds__SignatureType\n\
 {	struct ds__SignedInfoType*		SignedInfo;\n\
-	char*					SignatureValue;\n\
+	_ds__SignatureValue    			SignatureValue;\n\
 	struct ds__KeyInfoType*			KeyInfo;\n\
 	@char*					Id;\n\
 } ds__SignatureType, _ds__Signature;
@@ -368,7 +416,7 @@ typedef struct ds__SignatureType\n\
 ds__CanonicalizationMethodType = $\
     _c14n__InclusiveNamespaces*		c14n__InclusiveNamespaces;
 
-# ds:SignatureValueType has an Id we don't need
+# ds:SignatureValueType already declared above (and has an Id we don't need)
 ds__SignatureValueType =
 
 ds__ObjectType =
@@ -399,6 +447,22 @@ xenc__KeySizeType = | int
 
 xenc__EncryptionMethodType = $\
     struct ds__DigestMethodType*         ds__DigestMethod;
+
+_xenc__EncryptedData = | xenc__EncryptedDataType
+
+_xenc__EncryptedKey = | xenc__EncryptedKeyType
+
+################################################################################
+#
+#	SAML redefinitions
+#
+################################################################################
+
+saml1__AssertionType = $\
+@char*                                wsu__Id                        0;	///< Optional attribute.
+
+saml2__AssertionType = $\
+@char*                                wsu__Id                        0;	///< Optional attribute.
 
 ################################################################################
 #

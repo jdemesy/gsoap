@@ -1,13 +1,14 @@
 /*
 
-	wsa3.h
+	wsa3.h WS-Addressing 2003/03
 
 	Usage: See plugin/wsaapi.c
 
 	Generated with:
 	wsdl2h -cgye -o wsa3.h -t WS/WS-typemap.dat WS/WS-Addressing03.xsd
 
-	Modified by Robert van Engelen:
+        Requires:
+        - plugin/wsaapi.h and plugin/wsaapi.c
 
 	- Removed //gsoapopt
 	- Added the following directive to import WS-Addressing namespace:
@@ -15,7 +16,7 @@
 	  This ensures that the WS-Addressing schemas are not copied into the generated
 	  WSDL by soapcpp2 but are referenced with schema import in the generated WSDL.
 	- Added #define SOAP_WSA_2003
-	- Added SOAP_ENV__Header struct
+	- Added mutable SOAP_ENV__Header struct
 	- Added SOAP_ENV__Fault one-way operation
 
 */
@@ -43,6 +44,7 @@
  *                                                                            *
 \******************************************************************************/
 
+#define SOAP_NAMESPACE_OF_wsa3	"http://schemas.xmlsoap.org/ws/2003/03/addressing"
 //gsoap wsa3  schema import:	http://schemas.xmlsoap.org/ws/2003/03/addressing
 //gsoap wsa3  schema elementForm:	qualified
 //gsoap wsa3  schema attributeForm:	unqualified
@@ -175,7 +177,7 @@ typedef struct wsa3__EndpointReferenceType _wsa3__FaultTo;
 /// Element "http://schemas.xmlsoap.org/ws/2003/03/addressing":Recipient of type "http://schemas.xmlsoap.org/ws/2003/03/addressing":EndpointReferenceType.
 typedef struct wsa3__EndpointReferenceType _wsa3__Recipient;
 
-struct SOAP_ENV__Header
+mutable struct SOAP_ENV__Header
 {
                  _wsa3__MessageID  wsa3__MessageID 0;
                  _wsa3__RelatesTo *wsa3__RelatesTo 0;

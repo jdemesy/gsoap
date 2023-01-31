@@ -9,20 +9,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2000-2012, Robert van Engelen, Genivia Inc., All Rights Reserved.
 This part of the software is released under one of the following licenses:
-GPL, the gSOAP public license, or Genivia's license for commercial use.
---------------------------------------------------------------------------------
-gSOAP public license.
-
-The contents of this file are subject to the gSOAP Public License Version 1.3
-(the "License"); you may not use this file except in compliance with the
-License. You may obtain a copy of the License at
-http://www.cs.fsu.edu/~engelen/soaplicense.html
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-for the specific language governing rights and limitations under the License.
-
-The Initial Developer of the Original Code is Robert A. van Engelen.
-Copyright (C) 2000-2010, Robert van Engelen, Genivia Inc., All Rights Reserved.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -147,7 +134,7 @@ int main(int argc, char **argv)
   soap_register_plugin(soap, soap_wsa);
   soap_register_plugin(soap, soap_wsrm);
   if (argc < 2) /* no args: server */
-  {
+  { soap_set_mode(soap, SOAP_IO_KEEPALIVE);
 #if !defined(WITH_UDP) && defined(THREADS_H)
     THREAD_TYPE tid;
 #endif
@@ -159,6 +146,7 @@ int main(int argc, char **argv)
     /* set UDP server, pure XML w/o HTTP headers */
     soap_set_mode(soap, SOAP_IO_UDP);
 #elif defined(WITH_OPENSSL)
+    /* set up SSL locks (not needed for OpenSSL 1.1.0 and greater) */
     if (CRYPTO_thread_setup())
     { fprintf(stderr, "Cannot setup thread mutex for OpenSSL\n");
       exit(1);
@@ -190,6 +178,9 @@ int main(int argc, char **argv)
     soap->accept_timeout = -100000; /* 100ms timeout: do not block on accept */
     for (;;)
     { /* TCP accept (for UDP simply returns current socket) */
+#if !defined(WITH_UDP) && defined(THREADS_H)
+      struct soap *tsoap;
+#endif
       if (!soap_valid_socket(soap_accept(soap)))
       { if (soap->errnum)
           soap_print_fault(soap, stderr);
@@ -204,7 +195,9 @@ int main(int argc, char **argv)
 
       /* do not spawn threads for UDP, since accept() is a no-op for UDP */
 #if !defined(WITH_UDP) && defined(THREADS_H)
-      THREAD_CREATE(&tid, (void*(*)(void*))process_request, (void*)soap_copy(soap));
+      tsoap = soap_copy(soap);
+      while (THREAD_CREATE(&tid, (void*(*)(void*))process_request, (void*)tsoap))
+        sleep(1);
 #else
 #if !defined(WITH_UDP) && defined(WITH_OPENSSL)
       /* SSL accept */
@@ -238,7 +231,9 @@ int main(int argc, char **argv)
     const char *replyto = NULL;
     struct soap *callback = NULL;
     int duplex = 0; /* duplex mode */
-    int server = 0; /* use callback server in duplex */
+    int server = 0; /* use callback server with duplex mode */
+    int alive = 0; /* keep-alive callback port */
+    const char *to = NULL; /* service endpoint */
 #ifdef THREADS_H
     THREAD_TYPE tid;
 #endif
@@ -253,6 +248,7 @@ int main(int argc, char **argv)
     /* When the endpoint is an IP with a UDP destination, it is important to set UDP: */
     soap_set_mode(soap, SOAP_IO_UDP);
 #elif defined(WITH_OPENSSL)
+    /* set up SSL locks (not needed for OpenSSL 1.1.0 and greater) */
     CRYPTO_thread_setup();
     if (soap_ssl_client_context(soap,
       SOAP_SSL_DEFAULT | SOAP_SSL_SKIP_HOST_CHECK,
@@ -282,12 +278,19 @@ int main(int argc, char **argv)
         fprintf(stderr, "Warning: SSL requires a callback server for duplex mode, because the client waits for the HTTP Accepted response while server is sending a message to the callback: deadlock will occur\n");
 #endif
       }
+      if (strchr(argv[2], 'a'))
+        alive = 1;
     }
+
+    if (alive)
+      soap_set_mode(soap, SOAP_IO_KEEPALIVE);
 
     if (duplex)
     { /* set up the callback for duplex communication */
       replyto = clientURI;
       callback = soap_new1(SOAP_XML_INDENT | SOAP_XML_STRICT);
+      if (alive)
+        soap_set_mode(callback, SOAP_IO_KEEPALIVE);
       soap_register_plugin(callback, soap_wsa);
       soap_register_plugin(callback, soap_wsrm);
 #if defined(WITH_UDP)
@@ -371,7 +374,7 @@ int main(int argc, char **argv)
     { soap_print_fault(soap, stderr);
       return soap->error;
     }
-    while (soap_call_ns__wsrmdemo(soap, soap_wsrm_to(seq), RequestAction, "First Message", &res))
+    while ((to = soap_wsrm_to(seq)) != NULL && soap_call_ns__wsrmdemo(soap, to, RequestAction, "First Message", &res))
     { if (soap->error == 202)
       { printf("\n**** Request was accepted\n");
         break;
@@ -405,10 +408,6 @@ int main(int argc, char **argv)
 
     printf("\n**** Sending second message, requesting acks\n");
 
-    if (soap_wsrm_request_acks(soap, seq, soap_wsa_rand_uuid(soap), RequestAction))
-    { soap_print_fault(soap, stderr);
-      return soap->error;
-    }
 #ifdef HTTPDA_H
     /* Digest Auth */
     http_da_restore(soap, &info);
@@ -416,29 +415,36 @@ int main(int argc, char **argv)
     /* Basic Auth */
     soap->userid = userid; soap->passwd = passwd;
 #endif
-    /* just send the message without retry loop */
+    /* here we just send the message without retry loop */
     /* UDP may timeout when no UDP response message is sent by the server */
-    if (soap_call_ns__wsrmdemo(soap, soap_wsrm_to(seq), RequestAction, (char*)"Second Message", &res))
-    { if (soap->error == 202)
-        printf("\n**** Request was accepted\n");
-      else if (soap->error == SOAP_NO_TAG) /* empty <Body> */
-        printf("\n**** Request was accepted, acks received\n");
-      else if (!duplex)
-        soap_print_fault(soap, stderr);
-    }
-    else
-      printf("\n**** Response OK\n");
+    to = soap_wsrm_to(seq);
+    if (to)
+    { if (soap_wsrm_request_acks(soap, seq, soap_wsa_rand_uuid(soap), RequestAction))
+      { soap_print_fault(soap, stderr);
+        return soap->error;
+      }
+      if (soap_call_ns__wsrmdemo(soap, to, RequestAction, (char*)"Second Message", &res))
+      { if (soap->error == 202)
+          printf("\n**** Request was accepted\n");
+        else if (soap->error == SOAP_NO_TAG) /* empty <Body> */
+          printf("\n**** Request was accepted, acks received\n");
+        else if (!duplex)
+          soap_print_fault(soap, stderr);
+      }
+      else
+        printf("\n**** Response OK\n");
 
-    if (duplex)
-    { if (server)
-        sleep(1);
-      else if (callback_poll(callback, -200000)) /* poll for 200 ms */
-        return callback->error;
+      if (duplex)
+      { if (server)
+          sleep(1);
+        else if (callback_poll(callback, -200000)) /* poll for 200 ms */
+          return callback->error;
+      }
     }
-
+    /* check for any non-acked messages, and resend these */
     if (soap_wsrm_nack(seq))
     { printf("\n**** Resending "SOAP_ULONG_FORMAT" Non-Acked Messages\n", soap_wsrm_nack(seq));
-      soap_wsrm_resend(soap, seq, 0, 0); /* 0 0 means full range of msg nums */
+      soap_wsrm_resend(soap, seq, 0, 0); /* 0 0 means full range of msg nums of non-acked message to resend */
       if (duplex)
       { if (server)
           sleep(1);
@@ -451,10 +457,6 @@ int main(int argc, char **argv)
 
     printf("\n**** Sending third message\n");
 
-    if (soap_wsrm_request(soap, seq, soap_wsa_rand_uuid(soap), RequestAction))
-    { soap_print_fault(soap, stderr);
-      return soap->error;
-    }
 #ifdef HTTPDA_H
     /* Digest Auth */
     http_da_restore(soap, &info);
@@ -462,27 +464,34 @@ int main(int argc, char **argv)
     /* Basic Auth */
     soap->userid = userid; soap->passwd = passwd;
 #endif
-    /* in this case we just send the message without retry loop */
+    /* here we show how to just send the message without retry loop */
     /* UDP may timeout when no UDP response message is sent by the server */
-    if (soap_call_ns__wsrmdemo(soap, soap_wsrm_to(seq), RequestAction, argv[1], &res))
-    { if (soap->error == 202)
-        printf("\n**** Request was accepted\n");
-      else if (soap->error == SOAP_NO_TAG) /* empty <Body> */
-        printf("\n**** Request was accepted, acks received\n");
-      else if (!duplex)
-        soap_print_fault(soap, stderr);
-    }
-    else
-      printf("\n**** Response OK\n");
+    to = soap_wsrm_to(seq);
+    if (to)
+    { if (soap_wsrm_request(soap, seq, soap_wsa_rand_uuid(soap), RequestAction))
+      { soap_print_fault(soap, stderr);
+        return soap->error;
+      }
+      if (soap_call_ns__wsrmdemo(soap, to, RequestAction, argv[1], &res))
+      { if (soap->error == 202)
+          printf("\n**** Request was accepted\n");
+        else if (soap->error == SOAP_NO_TAG) /* empty <Body> */
+          printf("\n**** Request was accepted, acks received\n");
+        else if (!duplex)
+          soap_print_fault(soap, stderr);
+      }
+      else
+        printf("\n**** Response OK\n");
 
-    if (duplex)
-    { if (server)
-        sleep(1); /* allows to get messages before closing */
-      else if (callback_poll(callback, -200000)) /* poll for 200 ms */
-        return callback->error;
-    }
+      if (duplex)
+      { if (server)
+          sleep(1); /* allows to get messages before closing */
+        else if (callback_poll(callback, -200000)) /* poll for 200 ms */
+          return callback->error;
+      }
 
-    soap_wsrm_dump(soap, stdout);
+      soap_wsrm_dump(soap, stdout);
+    }
 
     printf("\n**** Closing the Sequence\n");
 
@@ -644,7 +653,7 @@ void *callback_server(void *ctx)
     if (soap_serve(soap) && soap->error != SOAP_STOP && soap->error != SOAP_EOF)
       soap_print_fault(soap, stderr);
     else if (soap->error == SOAP_EOF && !soap->errnum)
-      break; /* timed out */
+      continue; /* messaging IO timed out */
     else
       soap_wsrm_dump(soap, stdout);
   }
@@ -724,11 +733,12 @@ int ns__wsrmdemo(struct soap *soap, char *in, struct ns__wsrmdemoResponse *resul
   /* for fatal errors that terminate the sequence, we must call soap_wsrm_sender_fault() before soap_wsrm_check() */
   if (in && !strcmp(in, "error"))
   { /* this is fatal, we terminate the sequence */
+    int err;
     soap_wsrm_sequence_handle seq = soap_wsrm_seq(soap);
-    soap_wsrm_error(soap, seq, wsrm__SequenceTerminated);
+    err = soap_wsrm_error(soap, seq, wsrm__SequenceTerminated);
     soap_wsrm_seq_release(soap, seq);
     printf("\n**** Simulating Server Operation Fatal Error\n");
-    return soap_wsrm_sender_fault(soap, "The demo service wsrmdemo() operation generated a fatal error", NULL);
+    return err;
   }
 
   /* simulate a non-fatal user-defined error, which is can be relayed */
@@ -743,14 +753,14 @@ int ns__wsrmdemo(struct soap *soap, char *in, struct ns__wsrmdemoResponse *resul
   /* to just respond without requesting acks for response messages: */
   return soap_wsrm_reply(soap, soap_wsa_rand_uuid(soap), ResponseAction);
 #else
-  /* to request acks for response messages (only when offer was made): */
+  /* to request acks for response messages (only when WS-RM "create offer" was made): */
   return soap_wsrm_reply_request_acks(soap, soap_wsa_rand_uuid(soap), ResponseAction);
 #endif
 }
 
 /******************************************************************************\
  *
- *	Response Callback Service Operation
+ *	Client-Side Callback Operation to Receive Service Responses
  *
 \******************************************************************************/
 
@@ -839,7 +849,7 @@ int SOAP_ENV__Fault(struct soap *soap,
  *
 \******************************************************************************/
 
-#ifdef WITH_OPENSSL
+#if defined(WITH_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10100000L
 
 struct CRYPTO_dynlock_value
 { MUTEX_TYPE mutex;
@@ -910,7 +920,7 @@ void CRYPTO_thread_cleanup()
 
 #else
 
-/* OpenSSL not used */
+/* OpenSSL not used or OpenSSL prior to 1.1.0 */
 
 int CRYPTO_thread_setup()
 { return SOAP_OK;

@@ -1,7 +1,7 @@
 /*
 	wsrx.h
 
-	WS-ReliableMessaging definitions:
+	WS-ReliableMessaging 1.0/1.1 operation definitions:
 	SOAP Header definitions for WS-RM 1.1 2007
 	WS-RM Operations for CreateSequence, CloseSequence, TerminateSequence
 	WS-RM SequenceAcknowledgement server operation (RM dest for AcksTo)
@@ -11,7 +11,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2000-2010, Robert van Engelen, Genivia Inc., All Rights Reserved.
 This part of the software is released under ONE of the following licenses:
-GPL, or the gSOAP public license, or Genivia's license for commercial use.
+GPL or the gSOAP public license.
 --------------------------------------------------------------------------------
 gSOAP public license.
 
@@ -51,7 +51,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 --------------------------------------------------------------------------------
 */
 
-struct SOAP_ENV__Header
+mutable struct SOAP_ENV__Header
 {
   struct wsrm__SequenceType       *wsrm__Sequence                0;
   int                              __sizeAckRequested            0;

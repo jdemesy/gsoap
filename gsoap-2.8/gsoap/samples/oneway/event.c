@@ -23,7 +23,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2008, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -111,8 +111,9 @@ int main()
       }
     }
   }
-  soap_closesock(&soap); /* soap_send operations keep the socket open to possibly accept responses, so we need to explicitly close the socket now */
-  soap_end(&soap); /* this will close the socket too (if keep alive is off), just in case */
+  soap_closesock(&soap); /* EVENT_Z has no HTTP response (fire and forget), so close the socket */
+  soap_destroy(&soap);
+  soap_end(&soap);
   soap_done(&soap); /* detach environment (also closes sockets even with keep-alive) */
   return 0;
 }

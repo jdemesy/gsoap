@@ -10,7 +10,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2008, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -40,9 +40,9 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 int main()
 {
   struct soap *soap = soap_new();
-  struct _ns5__commingtotown response;
+  struct _ns3__commingtotown response;
 
-  if (soap_call___ns6__dtx(soap, NULL, NULL, "", &response))
+  if (soap_call___ns5__dtx(soap, NULL, NULL, "", &response))
     soap_print_fault(soap, stderr);
   else if (response.days == 0)
     printf("Today is the day!\n");

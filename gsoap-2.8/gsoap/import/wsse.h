@@ -1,13 +1,29 @@
 /*
-	wsse.h 1.0 and 1.1
+	wsse.h 1.0 (2004) and 1.1
 
 	Generated with:
 	wsdl2h -cegxy -o wsse.h -t WS/WS-typemap.dat WS/wsse.xsd
 
+        Requires:
+        - plugin/wsseapi.h and plugin/wsseapi.c
+        - plugin/mecevp.c
+        - plugin/smdevp.c
+        - custom/struct_timeval.c
+
+        This file imports:
+        - saml1.h       (optional, remove #import below to remove SAMLv1)
+        - saml2.h       (optional, remove #import below to remove SAMLv2)
+        - custom/struct_timeval.h
+        - wsu.h
+        - xenc.h
+        - ds.h
+        - c14n.h
+        - wsc.h
+
 	- Removed //gsoapopt
 	- Added //gsoap wsse  schema import: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
 	- Added //gsoap wsse  schema namespace2: http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd
-	- Added SOAP_ENV__Header struct
+	- Added mutable SOAP_ENV__Header struct
 
 */
 
@@ -32,6 +48,7 @@
  *                                                                            *
 \******************************************************************************/
 
+#define SOAP_NAMESPACE_OF_wsse	"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
 //gsoap wsse  schema import:		http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
 //gsoap wsse  schema namespace2:	http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd
 //gsoap wsse  schema elementForm:	qualified
@@ -53,6 +70,8 @@
 /// @brief This type is used for password elements per Section 4.1.
 /// complexType definition intentionally left blank.
 
+/// @brief Typedef synonym for struct wsse__EncodedString.
+typedef struct wsse__EncodedString wsse__EncodedString;
 /// Imported complexType "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd":EncodedString from typemap WS/WS-typemap.dat.
 /// @brief This type is used for elements containing stringified binary data.
 /// complexType definition intentionally left blank.
@@ -107,13 +126,27 @@ enum wsse__FaultcodeEnum
 /// Typedef synonym for enum wsse__FaultcodeEnum.
 typedef enum wsse__FaultcodeEnum wsse__FaultcodeEnum;
 
+/// "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd":EncodedString is a complexType with simpleContent.
+/// @brief This type is used for elements containing stringified binary data.
+struct wsse__EncodedString
+{
+/// __item wraps "xs:string" simpleContent.
+    char*                                __item                        ;
+/// Attribute "EncodingType" of XSD type xs:anyURI.
+   @char*                                EncodingType                   0;	///< Optional attribute.
+/// Imported attribute reference "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd":Id.
+   @char*                                wsu__Id                        0;	///< Optional attribute.
+};
+
 /// Element "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd":UsernameToken of complexType "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd":UsernameTokenType.
 /// @brief This element defines the wsse:UsernameToken element per Section 4.1.
 /// Imported element _wsse__UsernameToken from typemap WS/WS-typemap.dat.
 typedef struct _wsse__UsernameToken
 {	char*					Username;
 	struct _wsse__Password*			Password;
-	char*					Nonce;
+	struct wsse__EncodedString*		Nonce;
+        char*                                   Salt;
+        unsigned int*                           Iteration;
 	char*					wsu__Created;
 	@char*					wsu__Id;
 } _wsse__UsernameToken;
@@ -173,6 +206,8 @@ typedef struct _wsse__SecurityTokenReference
 /// Imported element _wsse__Security from typemap WS/WS-typemap.dat.
 #import "xenc.h"
 #import "wsc.h"
+#import "saml1.h" // remove this line to disable SAML1 and reduce generated code size
+#import "saml2.h" // remove this line to disable SAML2 and reduce generated code size
 typedef struct _wsse__Security
 {	struct _wsu__Timestamp*			wsu__Timestamp;
 	struct _wsse__UsernameToken*		UsernameToken;
@@ -181,6 +216,8 @@ typedef struct _wsse__Security
 	struct _xenc__ReferenceList*		xenc__ReferenceList;
 	struct wsc__SecurityContextTokenType*	wsc__SecurityContextToken;
 	struct ds__SignatureType*		ds__Signature;
+	struct saml1__AssertionType*		saml1__Assertion; // remove this line to disable SAML1 and reduce generated code size
+	struct saml2__AssertionType*		saml2__Assertion; // remove this line to disable SAML2 and reduce generated code size
 	@char*					SOAP_ENV__actor;
 	@char*					SOAP_ENV__role;
 } _wsse__Security;
@@ -203,7 +240,7 @@ typedef struct _wsse__Password
 /// @brief This global attribute is used to indicate the usage of a referenced or indicated token within the containing context
 /// '_wsse__Usage' attribute definition intentionally left blank.
 
-struct SOAP_ENV__Header
+mutable struct SOAP_ENV__Header
 {
   mustUnderstand _wsse__Security *wsse__Security 0;
 };

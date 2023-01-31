@@ -1,23 +1,23 @@
 
 LICENSE
 
-The gSOAP 2.8.0 (and 2.8.x updates) software is distributed under:
+The gSOAP 2.8 releases, including all 2.8.x updates, are distributed under:
 
 1) The gSOAP Public License 1.3 (which is based on the Mozilla public license
    1.1).
    
    Components NOT covered by the gSOAP Public License are:
-   - wsdl2h tool and its source code output, 
-   - soapcpp2 tool and its source code output,
+   - wsdl2h tool AND its source code output, 
+   - soapcpp2 tool AND its source code output,
    - UDDI code,
    - the webserver example code in gsoap/samples/webserver,
-   - and several example applications in the gsoap/samples directory.
+   - several example applications in the gsoap/samples directory.
 
    For details, see the note down below. The gSOAP public license is included
-   in the package: gsoap/license.pdf
+   in the package as license.pdf
 
 2) GPL v2 (GNU Public License, a common open-source software license) covers
-   all of the gSOAP software.
+   all of the gSOAP software, see GPLv2_license.txt
 
    If you use gSOAP under the GPL v2 to integrate parts of it or code generated
    by it with your own code, then you are allowed to sell copies of the
@@ -40,10 +40,10 @@ The gSOAP 2.8.0 (and 2.8.x updates) software is distributed under:
    code base in GPL and non-GPL.
 
 3) Proprietary commercial software development licenses for the standard
-   edition. The standard edition is identical to the open source version of
-   gSOAP and includes all software components, but without the GPL licensing
-   requirements for your project. There is also an enterprise edition that
-   offers the gold standard toolset licensing arrangement.
+   commercial edition and for enterprise-level licensing. The standard edition
+   is functionally identical to the open source version of gSOAP and includes
+   all software components, but without the open source GPL licensing
+   requirements for your project.
 
 IMPORTANT NOTE
 
@@ -63,9 +63,23 @@ source license, then an alternate proprietary software license for gSOAP which
 will remove the aforementioned requirement is available from Genivia Inc.
 
 The gSOAP software does not include any third-party GPL code. All software was
-build from the ground up. Note that the GNU Bison and Flex tools are used to
-generate source code for the gSOAP soapcpp2 compiler. However, the
-Bison/Flex-generated source code is not restricted by the GPL or LGPL terms.
+written from the ground up since 2003 and is owned and copyrighted by Genivia
+Inc. This allows Genivia to dual license the gSOAP software under GPLv2 and
+under the Genivia commercial-use licenses.
+
+The Ohloh site by Black Duck includes an analysis of the gSOAP GPLv2 open
+source repository:
+
+	https://www.ohloh.net/p/gsoap
+
+Please note that "Black Duck Scans" will detect the use of GPL gSOAP software
+in your project builds when you are using the gSOAP source code. The
+commercial-use licenses by Genivia explicitly grant the use of the gSOAP
+software for non-GPL use and inclusion.
+
+Note that the GNU Bison and Flex tools are used to generate source code for the
+gSOAP soapcpp2 compiler. The Bison/Flex-generated source code is not restricted
+by the GPL or LGPL terms for this particular use.
 
 Non-GPL third-party contributions are included in the 'extras' directory in the
 package and you are free to use these contributions. Suggested changes and
@@ -80,7 +94,7 @@ or contact us at Genivia Inc:
 
 	contact@genivia.com
 
-GPL and OPENSSL
+GPL and OpenSSL
 
 This program is released under the GPL with the additional exemption that
 compiling, linking, and/or using OpenSSL is allowed.
@@ -94,7 +108,7 @@ license is allowed.
 COPYRIGHT
 
 gSOAP is copyrighted by Robert A. van Engelen, Genivia, Inc.
-Copyright (C) 2000-2011 Robert A. van Engelen, Genivia, Inc.
+Copyright (C) 2000-2015 Robert A. van Engelen, Genivia, Inc.
 All Rights Reserved.
 
 USE RESTRICTIONS

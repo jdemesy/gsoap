@@ -7,7 +7,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2008, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -85,8 +85,7 @@ int main(int argc, char **argv)
   }
   soap_destroy(soap);
   soap_end(soap);
-  soap_done(soap);
-  free(soap);
+  soap_free(soap);
   return 0;
 }
 

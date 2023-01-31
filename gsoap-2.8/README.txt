@@ -55,27 +55,29 @@ FEATURES
 ================================================================================
 
 XML data binding tools for C/C++
-XSD schema <=> C/C++ type binding means XML and C/C++ data is type safe
-XML streaming auto-serialization of C/C++ data, with optional use of DOM
+XML schema <=> C/C++ type binding means XML and C/C++ data is type safe
+XML streaming auto-serialization of C/C++ data (with optional use of DOM)
 XML-RPC from/to JSON from/to C/C++ serialization (also in streaming mode)
-WSDL 1.1, SOAP 1.1 & 1.2 compliant
+No need to alter C/C++ types for serialization (declare type as 'volatile')
+WSDL 1.1/2.0, XSD 1.0/1.1, SOAP 1.1/1.2 compliant
 REST HTTP(S) 1.0/1.1 operations (GET,PUT,POST etc) for XML, JSON, etc
 Send and recieve XML over sockets, file FD, and C++ streams
 WS-I Basic Profile 1.0a, 1.1, and 1.2 compliant
+W3C schema patterns for data binding full test pattern coverage
 RSS 0.91, 0.92, 2.0 XML support
 MIME and MTOM attachment support (also in streaming mode)
 WS-Security XML authentication, signatures, encryption (also in streaming mode)
 WS-Policy 1.2, 1.5 and WS-SecurityPolicy 1.2 compliant
 WS-Addressing 2003/03, 2004/03, 2005/03 compliant
-WS-ReliableMessaging compliant
-WS-Discovery support
+WS-ReliableMessaging 1.0 and 1.1 compliant
+WS-Discovery 1.0/1.1
 UDDI v2 API
 NTLM authentication
 HTTP basic and digest authentication
 SSL/TLS communications with SSL session caching (OpenSSL or GNUTLS)
 Proxy and proxy authentication support
-Compression (HTTP(S) compression and zlib)
-IPv4 and IPv6 supported, TCP and UDP
+Compression (HTTP compression and zlib)
+IPv4 and IPv6, including direct TCP and UDP data transfer
 SOAP-over-UDP
 Apache 1.x and 2.0 modules
 IIS (ISAPI) and WinInet modules
@@ -100,8 +102,7 @@ This distribution package contains platform-independent source code. Pre-built
 'soapcpp2' and 'wsdl2h' binaries are included for the following platforms:
 
 	* Win32 i386 compatible
-	* Linux i386 compatible
-	* MAC OS X universal
+	* MAC OS X
 
 The binaries are located in 'gsoap/bin'.
 
@@ -118,18 +119,18 @@ GETTING STARTED
 Follow the installation instructions in INSTALL.txt first.
 
 The gSOAP 'wsdl2h' tool converts WSDLs into a gSOAP header file for processing
-with the gSOAP stub/skeleton generator 'soapcpp2' to generate XML
-serialization, stubs, and skeletons code to build Web services applications.
-Use 'wsdl2h' followed by 'soapcpp2' to translate an entire set of WSDL and XML
-schemas into representative C or C++ data structures and associated XML
-parsers. You can also use the gSOAP 'soapcpp2' tool directly on existing C/C++
-data structure declarations to create XML serialization routines for these
-types to simplify the storage of data in XML.
+with the gSOAP code gnerator 'soapcpp2' to generate XML serialization, stubs,
+and skeletons code to build Web services applications.  Use 'wsdl2h' followed
+by 'soapcpp2' to translate an entire set of WSDL and XML schemas into
+representative C or C++ data structures and associated XML parsers. You can
+also use the gSOAP 'soapcpp2' tool directly on existing C/C++ data structure
+declarations to create XML serialization routines for these types to simplify
+the storage of data in XML.
 
 Example translation of WSDL to code in two steps:
 
 	$ wsdl2h -s -o calc.h http://www.cs.fsu.edu/~engelen/calc.wsdl
-	$ soapcpp2 calc.h
+	$ soapcpp2 -CL -I/path/to/gsoap/import calc.h
 
 The 'calc.h' header file contains the services and XML schema types represented
 in C/C++, together with other useful information copied from the WSDL related
@@ -147,20 +148,35 @@ files for your project:
 
 To compile a client, all you need to do is to compile and link 'soapC.cpp',
 'soapClient.cpp', and 'stdsoap2.cpp' (or the installed libgsoap++, see
-INSTALLATION below) with your code. In your source code, add:
+INSTALLATION) with your code. To access the service in your code:
 
 	#include "soapH.h"
 	#include "calc.nsmap"
+        main()
+	{ struct soap *soap = soap_new(); // alloc 'soap' engine context
+	  double result;
+	  if (soap_call_ns2__add(soap, NULL, NULL, 1.0, 2.0, result) == SOAP_OK)
+	    std::cout << "The sum of 1.0 and 2.0 is " << result << std::endl;
+	  else
+	    soap_stream_fault(soap, std::cerr);
+	  soap_destroy(soap); // dealloc serialization data
+	  soap_end(soap);     // dealloc temp data
+	  soap_free(soap);    // dealloc 'soap' engine context
+	}
 
-This imports all soapcpp-generated definitions and the namespace mapping table.
+First, this imports all soapcpp-generated definitions and the namespace mapping
+table. Then the soap_call_ns2__add() invokes the service. This function is
+generated from the calc.h file by soapcpp2. The calc.h file includes
+instructions on what functions to call.
 
-To develop a C++ client application based on proxies, use 'soapcpp2' option -i:
+To develop a C++ client application based on C++ proxy objects rather than
+C-like functions, use 'soapcpp2' option -j:
 
 	$ wsdl2h -s -o calc.h http://www.cs.fsu.edu/~engelen/calc.wsdl
-	$ soapcpp2 -i calc.h
+	$ soapcpp2 -j -CL -I/path/to/gsoap/import calc.h
 
 This generates 'soapcalcProxy.h' and 'soapcalcProxy.cpp' with a calcProxy
-class you can use to invoke the service. For example:
+class with service methods that you can use to invoke services. For example:
 
 	#include "soapcalcProxy.h"
 	#include "calc.nsmap"
@@ -171,9 +187,11 @@ class you can use to invoke the service. For example:
 	    std::cout << "The sum of 1.0 and 2.0 is " << result << std::endl;
   	  else
 	    service.soap_stream_fault(std::cerr);
+	  service.destroy(); // dealloc serialization and temp data
 	}
 
-Compile and link with 'soapC.cpp' and 'stdsoap2.cpp' (or -lgsoap++).
+Compile the above program and link with 'soapC.cpp', 'soapcalcProxy.cpp', and
+'stdsoap2.cpp' (or -lgsoap++).
 
 To develop a C client, use 'wsdl2h' option -c to generate pure C code.
 
@@ -225,9 +243,7 @@ See LICENSE.txt
 COPYRIGHT
 ================================================================================
 
-gSOAP is copyrighted by Robert A. van Engelen, Genivia, Inc.
-Copyright (C) 2000-2010 Robert A. van Engelen, Genivia, Inc.
-All Rights Reserved.
+Copyright (C) 2000-2015 Robert van Engelen, Genivia, Inc. All Rights Reserved.
 
 ================================================================================
 USE RESTRICTIONS
@@ -275,9 +291,9 @@ INJURY OR LOSS OF HUMAN LIFE.
 EXTERNAL THIRD-PARTY LIBRARIES
 ================================================================================
 
-The gSOAP toolkit is mostly self-contained and does not require any third-party
-software to run in a basic configuration. When compression and SSL encryption
-are required the Zlib and OpenSSL libraries must be installed.
+The gSOAP toolkit is self-contained and does not require any third-party
+software to run in its standard configuration. When compression and SSL
+encryption are required the Zlib and OpenSSL libraries must be installed.
 
 To build the gSOAP 'soapcpp2' compiler, you must have Bison and Flex installed
 or the older Yacc and Lex equivalents. Note that licensing differs for Flex
@@ -295,8 +311,8 @@ compiler as a custom build.
 DISCLAIMER
 ================================================================================
 
-WE TRY OUR BEST TO PROVIDE YOU WITH "REAL-WORLD" EXAMPLES BUT WE CANNOT
-GUARANTEE THAT ALL CLIENT EXAMPLES CAN CONNECT TO THIRD PARTY WEB SERVICES
-WHEN THESE SERVICES ARE DOWN OR HAVE BEEN REMOVED.
+WE PROVIDE YOU WITH "REAL-WORLD" EXAMPLES BUT WE CANNOT GUARANTEE THAT ALL
+CLIENT EXAMPLES CAN CONNECT TO THIRD PARTY WEB SERVICES WHEN THESE SERVICES ARE
+DOWN OR HAVE BEEN REMOVED.
 
 ================================================================================

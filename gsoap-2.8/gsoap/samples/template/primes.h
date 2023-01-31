@@ -8,7 +8,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2010, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -41,7 +41,7 @@ class primes: struct soap
     simple_vector<int> prime; // container of ints
     void sieve(int n);
     void write();
-    ~primes();
+    virtual ~primes();
 };
 
 // #include is deferred to the generated code, which will then include the defs:

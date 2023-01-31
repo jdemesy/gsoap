@@ -1,21 +1,20 @@
 URL=http://192.168.2.2:8000/ServiceModelSamples/service
-WSDL=../../../../bin/wsdl2h
-GSOAP=../../../../bin/soapcpp2
+WSDL=../../../../wsdl/wsdl2h
+GSOAP=../../../../src/soapcpp2
 SOAPH=../../../../stdsoap2.h
 SOAPC=../../../../stdsoap2.c
 SOAPCPP=../../../../stdsoap2.cpp
 SOAPDOMC=../../../../dom.c
 SOAPDOMCPP=../../../../dom.cpp
 TYPEMAP=../../../../typemap.dat
-CC=gcc
-CPP=g++
+CC=gcc -x c
+CPP=g++ -x c++
 LIBS=-lssl -lcrypto
 GSFLAGS=-L -I../../../../import -I../../../..
 COFLAGS=-O2
 CWFLAGS=-Wall -Wno-deprecated-declarations
 CIFLAGS=-I. -I../../../.. -I../../../../plugin
-CMFLAGS=-DWITH_DOM -DWITH_OPENSSL
-#CMFLAGS=-DDEBUG -DWITH_DOM -DWITH_OPENSSL
+CMFLAGS=-DCB_THREAD -DWITH_WCF -DWITH_DOM -DWITH_OPENSSL
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)
 all:		calculator
 calculator:	calculator.h calculator.cpp $(SOAPH) $(SOAPC) wsrxClient.cpp

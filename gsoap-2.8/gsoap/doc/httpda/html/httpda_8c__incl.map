@@ -1,4 +1,4 @@
-base referer
-rect $httpda_8h.html 64,167 120,193
-rect $md5evp_8h.html 57,92 127,119
-rect $threads_8h.html 151,92 215,119
+<map id="httpda.c" name="httpda.c">
+<area shape="rect" id="node2" href="$httpda_8h.html" title="httpda.h" alt="" coords="278,80,349,107"/>
+<area shape="rect" id="node9" href="$threads_8h.html" title="threads.h" alt="" coords="642,155,719,181"/>
+</map>

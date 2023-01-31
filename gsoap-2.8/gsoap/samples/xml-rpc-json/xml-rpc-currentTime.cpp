@@ -13,7 +13,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2008, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -37,14 +37,13 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 --------------------------------------------------------------------------------
 */
 
-#include "soapH.h"
 #include "json.h"
 
 using namespace std;
 
 int main()
 {
-  soap *ctx = soap_new1(SOAP_IO_KEEPALIVE | SOAP_XML_INDENT);
+  soap *ctx = soap_new1(SOAP_IO_KEEPALIVE | SOAP_XML_INDENT | SOAP_C_UTFSTRING);
   ctx->send_timeout = 10; // 10 sec, stop if server is not accepting msg
   ctx->recv_timeout = 10; // 10 sec, stop if server does not respond in time
 

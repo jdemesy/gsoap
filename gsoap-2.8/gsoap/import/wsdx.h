@@ -1,16 +1,16 @@
 /*
 	wsdx.h
 
-	WS-Discovery definitions:
+	WS-Discovery 1.0/1.1 operation definitions:
 	SOAP Header definitions for WS-Discovery
 	WSDD operations Hello, Bye, Probe, ProbeMatches, Resolve, ResolveMatches
 
-	Imported by import/wsdd.h
+	Imported by import/wsdd.h, import/wsdd5.h, import/wsdd10.h
 
 gSOAP XML Web services tools
 Copyright (C) 2000-2011, Robert van Engelen, Genivia Inc., All Rights Reserved.
 This part of the software is released under ONE of the following licenses:
-GPL, or the gSOAP public license, or Genivia's license for commercial use.
+GPL or the gSOAP public license.
 --------------------------------------------------------------------------------
 gSOAP public license.
 
@@ -50,7 +50,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 --------------------------------------------------------------------------------
 */
 
-struct SOAP_ENV__Header
+mutable struct SOAP_ENV__Header
 {
   struct wsdd__AppSequenceType           *wsdd__AppSequence             0;
 };

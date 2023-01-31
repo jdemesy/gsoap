@@ -10,7 +10,7 @@
 gSOAP XML Web services tools
 Copyright (C) 2001-2008, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This software is released under one of the following two licenses:
-GPL or Genivia's license for commercial use.
+GPL.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -48,16 +48,16 @@ int main(int argc, char **argv)
  *
 \******************************************************************************/
 
-int __ns6__dtx(struct soap *soap, _XML x, struct _ns5__commingtotown *response)
+int __ns5__dtx(struct soap *soap, _XML x, struct _ns3__commingtotown *response)
 {
   struct soap *csoap = soap_copy(soap);
   struct _ns1__gmt gmt;
   struct _ns1__gmtResponse gmtResponse;
-  struct tm tm;
-  time_t *now, xmas;
+  struct tm tm, ptm;
+  time_t now, xmas;
   double sec, days;
 
-  if (soap_call___ns2__gmt(csoap, "http://www.cs.fsu.edu/~engelen/gmtlitserver.cgi", NULL, &gmt, &gmtResponse))
+  if (soap_call___ns4__gmt(csoap, "http://www.cs.fsu.edu/~engelen/gmtlitserver.cgi", NULL, &gmt, &gmtResponse))
   {
     soap_end(csoap);
     soap_free(csoap);
@@ -66,29 +66,22 @@ int __ns6__dtx(struct soap *soap, _XML x, struct _ns5__commingtotown *response)
 
   now = gmtResponse.param_1;
 
-  if (!now)
-    return soap_receiver_fault(soap, "Could not retrieve current time", NULL);
-
-  tm.tm_sec = 0;
-  tm.tm_min = 0;
-  tm.tm_hour = 0;
+  memset(&tm, 0, sizeof(struct tm));
   tm.tm_mday = 25;
   tm.tm_mon = 11;
-  tm.tm_year = gmtime(now)->tm_year; /* this year */
-  tm.tm_isdst = 0;
-  tm.tm_zone = NULL;
+  tm.tm_year = gmtime(&now)->tm_year; /* this year */
 
   xmas = soap_timegm(&tm);
 
-  if (xmas < *now)
+  if (xmas < now)
   {
     tm.tm_year++; /* xmas just passed, go to next year */
     xmas = soap_timegm(&tm);
   }
 
-  sec = difftime(xmas, *now);
+  sec = difftime(xmas, now);
   
-  if (soap_call_ns3__div(csoap, NULL, NULL, sec, 86400, &days))
+  if (soap_call_ns2__div(csoap, NULL, NULL, sec, 86400, &days))
   {
     soap_end(csoap);
     soap_free(csoap);
@@ -111,10 +104,10 @@ int __ns6__dtx(struct soap *soap, _XML x, struct _ns5__commingtotown *response)
  *
 \******************************************************************************/
 
-int ns3__add(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
-int ns3__sub(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
-int ns3__mul(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
-int ns3__div(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
-int ns3__pow(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
+int ns2__add(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
+int ns2__sub(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
+int ns2__mul(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
+int ns2__div(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
+int ns2__pow(struct soap *soap, double a, double b, double *r) { return SOAP_NO_METHOD; }
 
-int __ns2__gmt(struct soap *soap, struct _ns1__gmt *a, struct _ns1__gmtResponse *r) { return SOAP_NO_METHOD; }
+int __ns4__gmt(struct soap *soap, struct _ns1__gmt *a, struct _ns1__gmtResponse *r) { return SOAP_NO_METHOD; }
